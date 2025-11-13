@@ -1,0 +1,27 @@
+version: 2
+
+project_name: pudd
+
+builds:
+  - main: ./main.go
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+homebrew_casks:
+  - repository:
+      owner: heycomputer
+      name: homebrew-pudd
+    commit_author:
+      name: GitHub Actions
+      email: actions@github.com
+    directory: Casks
+    description: "quickly access the right documentation for your project's dependencies — version-aware and cached locally for fast access anytime."
+    homepage: "https://github.com/heycomputer/pudd"
+    license: MIT
