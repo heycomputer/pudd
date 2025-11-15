@@ -6,9 +6,9 @@ import (
 	"os"
 	"sort"
 
-	"github.com/heycomputer/pudd/internal/docs"
-	"github.com/heycomputer/pudd/internal/parser"
-	"github.com/heycomputer/pudd/internal/selector"
+	"github.com/heycomputer/pudding/internal/docs"
+	"github.com/heycomputer/pudding/internal/parser"
+	"github.com/heycomputer/pudding/internal/selector"
 )
 
 func main() {

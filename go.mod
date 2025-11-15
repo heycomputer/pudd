@@ -1,4 +1,4 @@
-module github.com/heycomputer/pudd
+module github.com/heycomputer/pudding
 
 go 1.24
 

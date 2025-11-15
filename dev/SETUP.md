@@ -1,6 +1,6 @@
 # Development Environment Setup
 
-This guide will help you set up a development environment for pudd.
+This guide will help you set up a development environment for pudding.
 
 ## Prerequisites
 
@@ -59,8 +59,8 @@ asdf plugin add golang
 
 ```bash
 # Clone the repository
-git clone https://github.com/heycomputer/pudd.git
-cd pudd
+git clone https://github.com/heycomputer/pudding.git
+cd pudding
 
 # Use your version manager install command to install the correct Go version
 mise install
@@ -81,7 +81,7 @@ make tools
 make build
 
 # run the binary
-./pudd --help
+./pd --help
 
 # Run tests
 make test

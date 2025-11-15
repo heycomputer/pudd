@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/heycomputer/pudd/internal/parser"
+	"github.com/heycomputer/pudding/internal/parser"
 )
 
 // BrowserOpener is a function type for opening URLs in a browser

@@ -12,7 +12,7 @@ test-coverage:
 
 .PHONY: build
 build:
-	go build -o pudd .
+	go build -o pd .
 
 .PHONY: install
 install:
@@ -20,7 +20,7 @@ install:
 
 .PHONY: clean
 clean:
-	rm -f pudd
+	rm -f pd
 
 .PHONY: tools
 tools: ## Install development tools

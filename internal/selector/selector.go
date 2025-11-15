@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/heycomputer/pudd/internal/parser"
+	"github.com/heycomputer/pudding/internal/parser"
 	fuzzyfinder "github.com/ktr0731/go-fuzzyfinder"
 )
 

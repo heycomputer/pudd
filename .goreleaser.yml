@@ -1,6 +1,6 @@
 version: 2
 
-project_name: pudd
+project_name: pudding
 
 builds:
   - main: ./main.go
@@ -17,11 +17,11 @@ archives:
 homebrew_casks:
   - repository:
       owner: heycomputer
-      name: homebrew-pudd
+      name: homebrew-pudding
     commit_author:
       name: GitHub Actions
       email: actions@github.com
     directory: Casks
     description: "Use version-aware fuzzy-search to quickly find the _right_ documentation from your project's dependencies and cache them locally for fast access anytime."
-    homepage: "https://github.com/heycomputer/pudd"
+    homepage: "https://github.com/heycomputer/pudding"
     license: MIT

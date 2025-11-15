@@ -1,10 +1,10 @@
-# pudd - project upstream doc discovery
+# pudding
 
 Use version-aware fuzzy-search to quickly find the _right_ documentation from your project's dependencies and cache them locally for fast access anytime.
 
 ---
 
-## Why pudd?
+## Why pudding?
 
 Developers often waste time:
 
@@ -12,7 +12,7 @@ Developers often waste time:
 - 🌐 Relying on an internet connection just to look up docs
 - ⚠️ Reading docs for the _wrong_ version of a dependency
 
-**pudd** fixes that by reading your project’s dependency files, finding the exact versions you use, and fetching their documentation from upstream sources — so you always have the right docs at your fingertips.
+**pudding** fixes that by reading your project's dependency files, finding the exact versions you use, and fetching their documentation from upstream sources — so you always have the right docs at your fingertips.
 
 ---
 
@@ -26,7 +26,7 @@ Developers often waste time:
 
 ## How it works
 
-1. pudd reads your dependency manifest (e.g. `mix.exs`, `package.json`, or `Gemfile`).
+1. pudding reads your dependency manifest (e.g. `mix.exs`, `package.json`, or `Gemfile`).
 2. It determines the exact version of each dependency.
 3. It fetches the corresponding documentation on-demand from upstream sources (e.g. HexDocs, npmjs, rubydoc.info).
 4. Docs are cached locally for offline access.
@@ -39,22 +39,22 @@ Developers often waste time:
 
 ```bash
 # doesn't work yet
-brew tap heycomputer/pudd
-brew install pudd
+brew tap heycomputer/pudding
+brew install pudding
 ```
 
 ### Using go install
 
 ```bash
-go install github.com/heycomputer/pudd@latest
+go install github.com/heycomputer/pudding@latest
 ```
 
-This will download, compile, and install the `pudd` binary to your `$GOPATH/bin` directory (or `$GOBIN` if set). Make sure this directory is in your `PATH`.
+This will download, compile, and install the `pd` binary to your `$GOPATH/bin` directory (or `$GOBIN` if set). Make sure this directory is in your `PATH`.
 
 ### Verify installation
 
 ```bash
-pudd --help
+pd --help
 ```
 
 ---

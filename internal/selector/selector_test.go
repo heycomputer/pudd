@@ -3,7 +3,7 @@ package selector
 import (
 	"testing"
 
-	"github.com/heycomputer/pudd/internal/parser"
+	"github.com/heycomputer/pudding/internal/parser"
 )
 
 func TestFilterDependencies(t *testing.T) {
