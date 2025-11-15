@@ -72,8 +72,8 @@ make test-release-locally
 For the first release when no tags exist:
 
 ```bash
-git tag -a v0.1.0 -m "Initial release"
-git push origin v0.1.0
+git tag -a v0.0.1 -m "Initial release"
+git push origin v0.0.1
 make release
 ```
 
