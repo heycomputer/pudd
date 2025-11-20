@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // Downloader handles downloading and caching documentation websites using wget
@@ -41,7 +42,9 @@ func (d *Downloader) Download(docURL, langSys, packageName, version string) (*Do
 	// Create cache directory for this package version
 	cacheDir := d.getCachePath(langSys, packageName, version)
 
-	// Check if already cached
+	// TODO: get the docURL path and use it to get the index.html path
+	
+	
 	indexPath := filepath.Join(cacheDir, "index.html")
 	if _, err := os.Stat(indexPath); err == nil {
 		// Already cached
@@ -80,6 +83,9 @@ func (d *Downloader) Download(docURL, langSys, packageName, version string) (*Do
 		"--quiet",
 		docURL,
 	)
+
+	// log the command being run to the console for debugging
+	 fmt.Printf("Running command: %s\n", strings.Join(cmd.Args, " "))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
