@@ -28,8 +28,6 @@ func fetchAndOpenWithFuncs(dep *parser.Dependency, projectType parser.ProjectTyp
 	switch projectType {
 	case parser.ProjectTypeElixir:
 		return fetchElixirDocsWithRunner(dep, cmdRunner)
-	case parser.ProjectTypeJavaScript:
-		return fetchNodeDocsWithOpener(dep, browserOpener)
 	case parser.ProjectTypeRuby:
 		return fetchRubyDocsWithOpener(dep, browserOpener)
 	default:
@@ -43,12 +41,6 @@ func fetchElixirDocsWithRunner(dep *parser.Dependency, cmdRunner CommandRunner) 
 		return cmdRunner("mix", "hex.docs", "offline", dep.Name, dep.Version)
 	}
 	return cmdRunner("mix", "hex.docs", "offline", dep.Name)
-}
-
-func fetchNodeDocsWithOpener(dep *parser.Dependency, browserOpener BrowserOpener) error {
-	// For npm packages, we'll open the npm package page
-	url := fmt.Sprintf("https://www.npmjs.com/package/%s/v/%s", dep.Name, dep.Version)
-	return browserOpener(url)
 }
 
 func fetchRubyDocsWithOpener(dep *parser.Dependency, browserOpener BrowserOpener) error {
