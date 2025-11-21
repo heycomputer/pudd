@@ -47,7 +47,7 @@ func TestFetchAndOpen_UnsupportedProjectType(t *testing.T) {
 		Type:    "unknown",
 	}
 
-	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeUnknown, mockCommandRunner, mockBrowserOpener)
+	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeUnknown, "", mockCommandRunner, mockBrowserOpener)
 	if err == nil {
 		t.Errorf("Expected error for unsupported project type, got nil")
 	}
@@ -87,7 +87,7 @@ func TestFetchElixirDocs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			resetMocks()
 			
-			err := fetchAndOpenWithFuncs(tt.dep, parser.ProjectTypeElixir, mockCommandRunner, mockBrowserOpener)
+			err := fetchAndOpenWithFuncs(tt.dep, parser.ProjectTypeElixir, "", mockCommandRunner, mockBrowserOpener)
 			if err != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}
@@ -113,7 +113,7 @@ func TestFetchElixirDocs_CommandFailure(t *testing.T) {
 		Type:    "elixir",
 	}
 	
-	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeElixir, mockCommandRunner, mockBrowserOpener)
+	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeElixir, "", mockCommandRunner, mockBrowserOpener)
 	if err == nil {
 		t.Errorf("Expected error when command fails, got nil")
 	}
@@ -128,7 +128,7 @@ func TestFetchRubyDocs(t *testing.T) {
 		Type:    "gem",
 	}
 	
-	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeRuby, mockCommandRunner, mockBrowserOpener)
+	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeRuby, "", mockCommandRunner, mockBrowserOpener)
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
@@ -155,7 +155,7 @@ func TestFetchRubyDocs_BrowserFailure(t *testing.T) {
 		Type:    "gem",
 	}
 	
-	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeRuby, mockCommandRunner, mockBrowserOpener)
+	err := fetchAndOpenWithFuncs(dep, parser.ProjectTypeRuby, "", mockCommandRunner, mockBrowserOpener)
 	if err == nil {
 		t.Errorf("Expected error when browser fails, got nil")
 	}
@@ -197,7 +197,7 @@ func TestAllProjectTypes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			resetMocks()
 			
-			err := fetchAndOpenWithFuncs(tt.dep, tt.projectType, mockCommandRunner, mockBrowserOpener)
+			err := fetchAndOpenWithFuncs(tt.dep, tt.projectType, "", mockCommandRunner, mockBrowserOpener)
 			if err != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}

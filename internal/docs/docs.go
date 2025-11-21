@@ -2,6 +2,7 @@ package docs
 
 import (
 	"fmt"
+	"net/url"
 	"os/exec"
 	"strings"
 	"github.com/heycomputer/pudding/internal/parser"
@@ -10,7 +11,7 @@ import (
 type BrowserOpener func(url string) error
 
 // CommandRunner is a function type for running external commands
-type CommandRunner func(name string, args ...string) error
+type CommandRunner func(name string, args ...string) (output []byte, err error)
 
 // Default implementations
 var (
@@ -19,40 +20,87 @@ var (
 )
 
 // FetchAndOpen fetches documentation for a dependency and opens it in the browser
-func FetchAndOpen(dep *parser.Dependency, projectType parser.ProjectType) error {
-	return fetchAndOpenWithFuncs(dep, projectType, defaultCommandRunner, defaultBrowserOpener)
+func FetchAndOpen(dep *parser.Dependency, projectType parser.ProjectType, keywords string) error {
+	return fetchAndOpenWithFuncs(dep, projectType,  keywords, defaultCommandRunner, defaultBrowserOpener)
 }
 
 // fetchAndOpenWithFuncs allows dependency injection for testing
-func fetchAndOpenWithFuncs(dep *parser.Dependency, projectType parser.ProjectType, cmdRunner CommandRunner, browserOpener BrowserOpener) error {
+func fetchAndOpenWithFuncs(dep *parser.Dependency, projectType parser.ProjectType, keywords string, cmdRunner CommandRunner, browserOpener BrowserOpener) error {
 	switch projectType {
 	case parser.ProjectTypeElixir:
-		return fetchElixirDocsWithRunner(dep, cmdRunner)
+		return fetchAndOpenHexDocs(dep, keywords, cmdRunner, browserOpener)
 	case parser.ProjectTypeRuby:
-		return fetchRubyDocsWithOpener(dep, browserOpener)
+		return fetchAndOpenGemDocs(dep, keywords, cmdRunner, browserOpener)
 	default:
 		return fmt.Errorf("unsupported project type: %s", projectType)
 	}
 }
 
-func fetchElixirDocsWithRunner(dep *parser.Dependency, cmdRunner CommandRunner) error {
+func fetchAndOpenHexDocs(dep *parser.Dependency, keywords string, cmdRunner CommandRunner, browserOpener BrowserOpener) error {
 	// Use mix hex.docs offline to fetch and open docs
+	cmdParams := []string{"mix", "hex.docs", "fetch", dep.Name}
 	if dep.Version != "" {
-		return cmdRunner("mix", "hex.docs", "offline", dep.Name, dep.Version)
+		cmdParams = append(cmdParams, dep.Version)
 	}
-	return cmdRunner("mix", "hex.docs", "offline", dep.Name)
+
+	fetchDocsOutput, err := cmdRunner(cmdParams[0], cmdParams[1:]...)
+	
+	if err != nil {
+		return fmt.Errorf("failed to fetch docs for %s: %w", dep.Name, err)
+	}
+
+	// extract the path from fetchDocsOutput
+	// assuming the output contains the path in a known format
+	// e.g., "Docs fetched to /path/to/docs"
+	
+	docPath := extractDocPath(string(fetchDocsOutput))
+	if docPath == "" {
+		return fmt.Errorf("failed to extract docs path for %s from %s", dep.Name, string(fetchDocsOutput))
+	}
+
+	// Construct the local URL to the documentation
+	hexDocsURL := fmt.Sprintf("file://%s/", docPath)
+
+	// Append search query if provided
+	if keywords != "" {
+		hexDocsURL = fmt.Sprintf("%ssearch.html?q=%s", hexDocsURL, url.QueryEscape(keywords))
+	} else {
+		hexDocsURL = fmt.Sprintf("%sindex.html", hexDocsURL)
+	}
+
+	// Open the documentation in browser using shell expansion
+	if err := browserOpener(hexDocsURL); err != nil {
+		return fmt.Errorf("failed to open docs for %s: %w", dep.Name, err)
+	}
+
+	return nil
 }
 
-func fetchRubyDocsWithOpener(dep *parser.Dependency, browserOpener BrowserOpener) error {
-	// Generate documentation using rdoc
-	// rdoc GEM_NAME --rdoc --version GEM_VERSION
-	cmdRunner := defaultCommandRunner
-	if err := cmdRunner("rdoc", dep.Name, "--rdoc", "--version", dep.Version); err != nil {
+func extractDocPath(output string) string {
+	// e.g. "Docs fetched:  /path/to/docs\n"
+	// from the first forward slash to the end of the line
+	idx := strings.Index(output, "/")
+	if idx == -1 {
+		return ""
+	}
+	start := idx
+	end := strings.Index(output[start:], "\n")
+	if end == -1 {
+		end = len(output)
+	} else {
+		end += start
+	}
+	return strings.TrimSpace(output[start:end])
+}
+
+func fetchAndOpenGemDocs(dep *parser.Dependency, keywords string, cmdRunner CommandRunner, browserOpener BrowserOpener) error {
+	_, err := cmdRunner("rdoc", dep.Name, "--rdoc", "--version", dep.Version)
+	if err != nil {
 		return fmt.Errorf("failed to generate rdoc for %s: %w", dep.Name, err)
 	}
 
 	// run command to get gem env home and assign to variable
-	gemEnvOutput, err := exec.Command("sh", "-c", "gem env home").Output()
+	gemEnvOutput, err := cmdRunner("sh", "-c", "gem env home")
 	if err != nil {
 		return fmt.Errorf("failed to get gem env home: %w", err)
 	}
@@ -62,7 +110,14 @@ func fetchRubyDocsWithOpener(dep *parser.Dependency, browserOpener BrowserOpener
 
 	// Get the path to the generated documentation
 	// open $(gem env home)/doc/GEM_NAME-GEM_VERSION/rdoc/table_of_contents.html
-	gemDocTocUrl := fmt.Sprintf("%s/doc/%s-%s/rdoc/table_of_contents.html", gemEnvHome, dep.Name, dep.Version)
+	gemDocTocUrl := fmt.Sprintf("file://%s/doc/%s-%s/rdoc/", gemEnvHome, dep.Name, dep.Version)
+
+	// Append search query if provided
+	if keywords != "" {
+		gemDocTocUrl = fmt.Sprintf("%sindex.html?q=%s", gemDocTocUrl, url.QueryEscape(keywords))
+	} else {
+		gemDocTocUrl = fmt.Sprintf("%s%s", gemDocTocUrl, "table_of_contents.html")
+	}
 
 	// Open the documentation in browser using shell expansion
 	if err := browserOpener(gemDocTocUrl); err != nil {
@@ -73,13 +128,14 @@ func fetchRubyDocsWithOpener(dep *parser.Dependency, browserOpener BrowserOpener
 }
 
 // runCommand executes an external command
-func runCommand(name string, args ...string) error {
+func runCommand(name string, args ...string) ([]byte, error) {
 	cmd := exec.Command(name, args...)
-	output, err := cmd.CombinedOutput()
+	output, err := cmd.Output()
+	
 	if err != nil {
-		return fmt.Errorf("failed to run %s: %w (output: %s)", name, err, string(output))
+		return nil, fmt.Errorf("failed to run %s: %w (output: %s)", name, err, string(output))
 	}
-	return nil
+	return output, nil
 }
 
 func openBrowser(url string) error {
