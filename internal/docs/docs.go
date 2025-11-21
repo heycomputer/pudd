@@ -141,7 +141,7 @@ func runCommand(name string, args ...string) ([]byte, error) {
 func openBrowser(url string) error {
 	// Try to open URL in default browser
 	// macOS: open, Linux: xdg-open, Windows: start
-	cmd := exec.Command("open", url)
+	cmd := exec.Command("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", url)
 	err := cmd.Start()
 	if err != nil {
 		// Try xdg-open for Linux
