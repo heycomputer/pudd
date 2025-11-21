@@ -22,6 +22,12 @@ func main() {
 		query = flag.Arg(0)
 	}
 
+	// Get optional search keyword from second positional argument
+	var searchKeyword string
+	if flag.NArg() > 1 {
+		searchKeyword = flag.Arg(1)
+	}
+
 	// Get current working directory
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -66,7 +72,7 @@ func main() {
 
 	// Fetch and open documentation
 	fmt.Printf("Opening documentation for %s %s...\n", selectedDep.Name, selectedDep.Version)
-	if err := docs.FetchAndOpen(selectedDep, projectType); err != nil {
+	if err := docs.FetchAndOpen(selectedDep, projectType, searchKeyword); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: failed to open documentation: %v\n", err)
 		os.Exit(1)
 	}
