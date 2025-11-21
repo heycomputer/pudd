@@ -4,6 +4,7 @@ project_name: pudding
 
 builds:
   - main: ./main.go
+    binary: pd
     goos:
       - darwin
       - linux
